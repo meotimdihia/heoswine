@@ -15,13 +15,17 @@ import android.widget.Toast;
 
 public class FireMissilesDialogFragment extends DialogFragment{
 	
+	protected static final String TAG = "LogLogLog";
+
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		Log.v(TAG, "resume=" );
 		 getDialog().setOnKeyListener(new OnKeyListener()
 		 {
 		    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event){
+		    	Log.v(TAG, "111onKeyup=" );
 		    	return true;
 		  }
 		});
