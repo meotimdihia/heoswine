@@ -39,7 +39,16 @@
         <LinearLayout
             style="@style/LoginFormContainer"
             android:orientation="vertical" >
-
+    		<TextView
+		        android:id="@+id/text"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentTop="true"
+		        android:layout_centerHorizontal="true"
+		        android:layout_marginTop="27dp"
+		        android:text="Đăng nhập tài khoản"
+		        android:textAppearance="?android:attr/textAppearanceLarge" />
+    		
             <EditText
                 android:id="@+id/email"
                 android:layout_width="match_parent"
@@ -47,7 +56,8 @@
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:text="front_user@yahoo.com" />
 
             <EditText
                 android:id="@+id/password"
@@ -59,7 +69,8 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:text="9101112" />
 
             <Button
                 android:id="@+id/sign_in_button"

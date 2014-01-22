@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="14" />
+        android:minSdkVersion="16"
+        android:targetSdkVersion="19" />
 
     <application
         android:allowBackup="true"
@@ -26,6 +26,12 @@
             android:name="com.example.hpswine.LoginActivity"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
+        </activity>
+        <activity
+            android:name="com.example.hpswine.DashboardActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_dashboard"
+            android:theme="@style/FullscreenTheme" >
         </activity>
     </application>
 

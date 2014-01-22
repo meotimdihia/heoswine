@@ -11,7 +11,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
-        switchLogin();
+        startLoginForm(); 
     }
 
 
@@ -22,7 +22,7 @@ public class MainActivity extends Activity {
         return true;
     }
     
-    public void switchLogin()
+    public void startLoginForm()
     {
     	Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
