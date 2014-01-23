@@ -30,8 +30,7 @@
         <activity
             android:name="com.example.hpswine.DashboardActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_dashboard"
-            android:theme="@style/FullscreenTheme" >
+            android:label="@string/title_activity_dashboard" >
         </activity>
     </application>
 

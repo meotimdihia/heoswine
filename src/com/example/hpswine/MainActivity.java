@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        return true; 
     }
     
     public void startLoginForm()
@@ -28,4 +28,9 @@ public class MainActivity extends Activity {
 		startActivity(intent);
     }
     
+    public void startDashboard()
+    {
+    	Intent intent = new Intent(this, DashboardActivity.class);
+		startActivity(intent);
+    }    
 }
