@@ -1,22 +1,44 @@
 package com.example.hpswine;
 
+
 import android.os.Bundle;
-import android.app.Activity;
-import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class DashboardActivity extends Activity {
+public class DashboardActivity extends FragmentActivity
+	implements MenuFragment.onMenuSelectedListener {
 
+	@Override
+	public void onMenuSelected(String fragmentName) {
+//		if (fragmentName == "DetectHeo") {
+			DetectHeoFragment newFragment = new DetectHeoFragment();
+//		} else if (fragmentName == "ReadUsbDevices") {
+//			ReadUsbDevicesFragment newFragment = new ReadUsbDevicesFragment();
+//		}
+
+        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+
+        
+		transaction.replace(R.id.fragment_container, newFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();		
+		
+	}
+
+    
 	private static final String TAG = "LogLogLog";
-
+	private boolean mTwoPane;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,7 +49,18 @@ public class DashboardActivity extends Activity {
 //		idheoinput.setEnabled(false);
 		
 		setContentView(R.layout.activity_dashboard);
+		if (findViewById(R.id.fragment_container) != null) {
+			// The detail container view will be present only in the
+			// large-screen layouts (res/values-large and
+			// res/values-sw600dp). If this view is present, then the
+			// activity should be in two-pane mode.
+			mTwoPane = true;
 
+			// In two-pane mode, list items should be given the
+			// 'activated' state when touched.
+//			((MenuFragment) getSupportFragmentManager().findFragmentById(
+//					R.id.menu_fragment))).setActivateOnItemClick(true);
+		}
 	}
 
 	@Override
@@ -112,4 +145,5 @@ public class DashboardActivity extends Activity {
     	}
     	return super.dispatchKeyEvent(event);
 	}
+
 }

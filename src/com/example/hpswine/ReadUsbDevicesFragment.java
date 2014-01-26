@@ -8,12 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class DetectHeoFragment extends Fragment {
+public class ReadUsbDevicesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.detect_heo, container, false);
+        return inflater.inflate(R.layout.read_usb, container, false);
     }
 
 }
