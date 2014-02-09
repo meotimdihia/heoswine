@@ -42,6 +42,7 @@ public class DashboardActivity extends FragmentActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        HttpRequest.get("http://google.com").receive(System.out);
 //		EditText idHeoInput  = (EditText) findViewById(R.id.editText1);
 //		idHeoInput.setText("this is a text");
 //		EditText idheoinput = (EditText) findViewById(R.id.editText2);
