@@ -1,4 +1,4 @@
-package com.example.hpswine;
+package com.heocompany.hpswine;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

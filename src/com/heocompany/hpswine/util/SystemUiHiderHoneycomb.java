@@ -1,4 +1,4 @@
-package com.example.hpswine.util;
+package com.heocompany.hpswine.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

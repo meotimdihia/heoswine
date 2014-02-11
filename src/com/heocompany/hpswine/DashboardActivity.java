@@ -1,6 +1,14 @@
-package com.example.hpswine;
+package com.heocompany.hpswine;
 
 
+import java.util.HashMap;
+import java.util.Iterator;
+
+import com.utility.HttpRequest;
+
+import android.content.Context;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -18,15 +26,16 @@ public class DashboardActivity extends FragmentActivity
 
 	@Override
 	public void onMenuSelected(String fragmentName) {
-//		if (fragmentName == "DetectHeo") {
-			DetectHeoFragment newFragment = new DetectHeoFragment();
-//		} else if (fragmentName == "ReadUsbDevices") {
-//			ReadUsbDevicesFragment newFragment = new ReadUsbDevicesFragment();
-//		}
-
+		Fragment newFragment = null;
+		if (fragmentName.equals("DetectHeo")) {
+			 newFragment = new DetectHeoFragment();
+		} else if (fragmentName.equals("ReadUsbDevices")) {
+			 newFragment = new ReadUsbDevicesFragment();
+		}
+	
+		
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
-
-        
+		
 		transaction.replace(R.id.fragment_container, newFragment);
         transaction.addToBackStack(null);
 
@@ -42,7 +51,7 @@ public class DashboardActivity extends FragmentActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        HttpRequest.get("http://google.com").receive(System.out);
+
 //		EditText idHeoInput  = (EditText) findViewById(R.id.editText1);
 //		idHeoInput.setText("this is a text");
 //		EditText idheoinput = (EditText) findViewById(R.id.editText2);

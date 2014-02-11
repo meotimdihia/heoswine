@@ -1,4 +1,4 @@
-package com.example.hpswine;
+package com.heocompany.hpswine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,17 +73,19 @@ public class MenuFragment extends ListFragment {
     
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        // Notify the parent activity of selected item
+
     	int i = 0;
     	String fragmentName = "";
+    	
     	for (String key : menu.keySet()) {
     		if (i == position) {
     			fragmentName = key;
     			break;
     		}
+    		i++;
     	}
 
-		//    	Log.e("LogLog", Long.toString(id));
+		    	
         mCallback.onMenuSelected(fragmentName);
         
         getListView().setItemChecked(position, true);

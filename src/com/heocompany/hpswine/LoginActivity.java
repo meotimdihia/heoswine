@@ -1,4 +1,4 @@
-package com.example.hpswine;
+package com.heocompany.hpswine;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -31,7 +31,7 @@ public class LoginActivity extends Activity {
 	/**
 	 * The default email to populate the email field with.
 	 */
-	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
+	public static final String EXTRA_EMAIL = "com.heocompany.android.authenticatordemo.extra.EMAIL";
 
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
@@ -55,6 +55,7 @@ public class LoginActivity extends Activity {
 
 		setContentView(R.layout.activity_login);
 
+		
 		// Set up the login form.
 		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
 		mEmailView = (EditText) findViewById(R.id.email);
@@ -203,6 +204,7 @@ public class LoginActivity extends Activity {
 
 			try {
 				// Simulate network access.
+				
 				Thread.sleep(1000);
 				this.startDashboard();
 			} catch (InterruptedException e) {

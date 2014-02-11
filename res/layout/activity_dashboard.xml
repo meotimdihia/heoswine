@@ -10,7 +10,7 @@
     android:showDividers="middle"
     tools:context=".ItemListActivity" >
 
-    <fragment android:name="com.example.hpswine.MenuFragment"
+    <fragment android:name="com.heocompany.hpswine.MenuFragment"
               android:id="@+id/menu_fragment"
         android:layout_width="100dp"
         android:layout_height="match_parent"

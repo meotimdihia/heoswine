@@ -1,20 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.hpswine"
+    package="com.heocompany.hpswine"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
+    
 
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+   
     <application
         android:allowBackup="true"
         android:icon="@drawable/logo_blue"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        
+        <meta-data android:name="com.google.android.gms.version"
+           android:value="@integer/google_play_services_version" />
+        
+	    <intent-filter>
+	        <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+	    </intent-filter>
+
+	    <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+	        android:resource="@xml/device_filter" />
+	          
         <activity
-            android:name="com.example.hpswine.MainActivity"
+            android:name="com.heocompany.hpswine.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,12 +42,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.hpswine.LoginActivity"
+            android:name="com.heocompany.hpswine.LoginActivity"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name="com.example.hpswine.DashboardActivity"
+            android:name="com.heocompany.hpswine.DashboardActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_dashboard" >
         </activity>
