@@ -4,13 +4,18 @@ package com.heocompany.hpswine;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +24,11 @@ import android.widget.Toast;
 
 public class ReadUsbDevicesFragment extends Fragment {
 
+	protected static final String TAG = null;
+	private static final String ACTION_USB_PERMISSION = "com.heocompany.hpswine.USB_PERMISSION";
+	UsbManager mUsbManager;
+	UsbDevice device = null;
+	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
@@ -29,7 +39,10 @@ public class ReadUsbDevicesFragment extends Fragment {
     public void onResume() {
     	super.onResume();
 
-    	
+        PendingIntent mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
+        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        getActivity().registerReceiver(mUsbReceiver, filter);
+
 	    UsbManager manager = (UsbManager) getActivity().getSystemService(Context.USB_SERVICE);
 	    // Get the list of attached devices
 	    HashMap<String, UsbDevice> devices = manager.getDeviceList();
@@ -46,8 +59,8 @@ public class ReadUsbDevicesFragment extends Fragment {
 	    while (it.hasNext()) 
 	    {
 	    	deviceName = it.next();
-	        UsbDevice device = devices.get(deviceName);
-
+	        device = devices.get(deviceName);
+	        manager.requestPermission(device, mPermissionIntent);
 	        VID = Integer.toHexString(device.getVendorId()).toUpperCase();
 	        PID = Integer.toHexString(device.getProductId()).toUpperCase();
 	        t = Toast.makeText(getActivity(), deviceName + " " +  VID + ":" + PID + " " + manager.hasPermission(device), Toast.LENGTH_LONG);
@@ -61,5 +74,29 @@ public class ReadUsbDevicesFragment extends Fragment {
 	    								"<strong>DeviceName</strong>: " + deviceName + "<br/>" +
 										"<strong>VID</strong>: " + VID + "<br/>" +
 										"<strong>PID</strong>: " + PID+ "<br/>"));
+	    
+
+       
     }
+    
+	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+
+	    public void onReceive(Context context, Intent intent) {
+	        String action = intent.getAction(); 
+	        if (ACTION_USB_PERMISSION.equals(action)) {
+	            synchronized (this) {
+	                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+	                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+	                    if(device != null){
+	                      //call method to set up device communication
+	                   }
+	                } 
+	                else {
+	                    Log.d(TAG, "permission denied for device " + device);
+	                }
+	            }
+	        }
+	    }
+	};
 }
