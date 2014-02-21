@@ -8,14 +8,8 @@
         android:minSdkVersion="16"
         android:targetSdkVersion="19" />
     
-<<<<<<< HEAD
 	<uses-feature android:name="android.hardware.usb.host" />
 
-=======
-
-	<uses-feature android:name="android.hardware.usb.host" />
-	
->>>>>>> 8b228747a94e3b41ed165053b0fc6b0e868e0097
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -28,11 +22,7 @@
         android:icon="@drawable/logo_blue"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-<<<<<<< HEAD
-             
-=======
-	          
->>>>>>> 8b228747a94e3b41ed165053b0fc6b0e868e0097
+
         <activity
             android:name="com.heocompany.hpswine.MainActivity"
             android:label="@string/app_name" >
