@@ -10,7 +10,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+<<<<<<< HEAD
 import android.hardware.usb.UsbConstants;
+=======
+>>>>>>> 8b228747a94e3b41ed165053b0fc6b0e868e0097
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
@@ -30,9 +33,16 @@ import android.widget.Toast;
 
 public class ReadUsbDevicesFragment extends Fragment {
 
+<<<<<<< HEAD
 	private byte[] bytes = {};
 	private static int TIMEOUT = 2000;
 	private boolean forceClaim = true;
+=======
+	protected static final String TAG = null;
+	private static final String ACTION_USB_PERMISSION = "com.heocompany.hpswine.USB_PERMISSION";
+	UsbManager mUsbManager;
+	UsbDevice device = null;
+>>>>>>> 8b228747a94e3b41ed165053b0fc6b0e868e0097
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,7 +54,10 @@ public class ReadUsbDevicesFragment extends Fragment {
     public void onResume() {
     	super.onResume();
 
-    	
+        PendingIntent mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
+        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+        getActivity().registerReceiver(mUsbReceiver, filter);
+
 	    UsbManager manager = (UsbManager) getActivity().getSystemService(Context.USB_SERVICE);
 	    // Get the list of attached devices
 	    HashMap<String, UsbDevice> devices = manager.getDeviceList();
@@ -66,11 +79,15 @@ public class ReadUsbDevicesFragment extends Fragment {
 	    {
 	    	deviceName = it.next();
 	        device = devices.get(deviceName);
+<<<<<<< HEAD
 	        
 	        if (device != null) {    
 			    manager.requestPermission(device, mPermissionIntent);
 		    }
 	        permission = manager.hasPermission(device);
+=======
+	        manager.requestPermission(device, mPermissionIntent);
+>>>>>>> 8b228747a94e3b41ed165053b0fc6b0e868e0097
 	        VID = Integer.toHexString(device.getVendorId()).toUpperCase();
 	        PID = Integer.toHexString(device.getProductId()).toUpperCase();
 		    break;
@@ -78,6 +95,7 @@ public class ReadUsbDevicesFragment extends Fragment {
 	    
 	    
 	    TextView descText = (TextView)getActivity().findViewById(R.id.description);
+<<<<<<< HEAD
 	    descText.setText(Html.fromHtml("	<strong>Device Number</strong>: " + devices.size() + "<br/>"
 	    								+	"<strong>DeviceName</strong>: " + deviceName + "<br/>"
 										+	"<strong>VID</strong>: " + VID + "<br/>"
@@ -230,4 +248,35 @@ public class ReadUsbDevicesFragment extends Fragment {
     	        }
     	    }
     	};
+=======
+	    descText.setText(Html.fromHtml("<strong>Device Number</strong>: " + devices.size() + "<br/>" +
+	    								"<strong>DeviceName</strong>: " + deviceName + "<br/>" +
+										"<strong>VID</strong>: " + VID + "<br/>" +
+										"<strong>PID</strong>: " + PID+ "<br/>"));
+	    
+
+       
+    }
+    
+	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+
+	    public void onReceive(Context context, Intent intent) {
+	        String action = intent.getAction(); 
+	        if (ACTION_USB_PERMISSION.equals(action)) {
+	            synchronized (this) {
+	                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+	                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+	                    if(device != null){
+	                      //call method to set up device communication
+	                   }
+	                } 
+	                else {
+	                    Log.d(TAG, "permission denied for device " + device);
+	                }
+	            }
+	        }
+	    }
+	};
+>>>>>>> 8b228747a94e3b41ed165053b0fc6b0e868e0097
 }
