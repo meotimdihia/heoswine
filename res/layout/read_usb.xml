@@ -4,21 +4,25 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-	<TextView
-       android:id="@+id/description"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:ems="10"
-       android:layout_marginTop="27dp" />
-    <EditText
-        android:id="@+id/editText1"
+    <TextView
+        android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textMultiLine"
-        android:text="Layout Sample use for read data transfer from devices" >
+        android:layout_marginTop="27dp"
+        android:ems="10" />
 
-        <requestFocus />
-    </EditText>
+    <ScrollView
+        android:id="@+id/scrolldata"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <TableLayout
+            android:id="@+id/measure_table"
+            android:layout_width="fill_parent"
+            android:padding="10dp"
+            android:layout_height="fill_parent"
+            android:stretchColumns="0,1" >
+        </TableLayout>
+    </ScrollView>
 
 </LinearLayout>

@@ -1,14 +1,8 @@
 package com.heocompany.hpswine;
 
 
-import java.util.HashMap;
-import java.util.Iterator;
 
-import com.utility.HttpRequest;
 
-import android.content.Context;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -17,7 +11,6 @@ import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -71,18 +64,19 @@ public class DashboardActivity extends FragmentActivity
 //			((MenuFragment) getSupportFragmentManager().findFragmentById(
 //					R.id.menu_fragment))).setActivateOnItemClick(true);
 		}
+        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+		
+		transaction.replace(R.id.fragment_container, new ReadUsbDevicesFragment());
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+		
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-	}
-	
-	public void detectIDheo(View v) {
-		Log.v(TAG, "onKeyup=" );
-		Toast.makeText(this, "ID: ", Toast.LENGTH_LONG).show();
-		FireMissilesDialogFragment Fire = new FireMissilesDialogFragment ();
-		Fire.show(getFragmentManager(), "Detect ID heo");
 	}
 	
 	@Override 

@@ -28,18 +28,18 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
         
-        try {
-        	
-	        URL url = new URL("http://www.android.com/");
-	        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-	   
-	        	
-	            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-	 
-
-        } catch (Exception e) {
-        	e.printStackTrace();
-		}
+//        try {
+//        	
+//	        URL url = new URL("http://www.android.com/");
+//	        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//	   
+//	        	
+//	            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+//	 
+//
+//        } catch (Exception e) {
+//        	e.printStackTrace();
+//		}
 //        Log.e("Log", Integer.toString(response));
 //        startLoginForm();  
         startDashboard();
