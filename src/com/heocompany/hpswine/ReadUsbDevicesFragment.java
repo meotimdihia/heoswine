@@ -218,8 +218,10 @@ public class ReadUsbDevicesFragment extends Fragment {
 				StringBuilder hex = new StringBuilder(buffer.length * 2);
 				
 				publishProgress(Arrays.toString(buffer));
+				publishProgress(bytesToHex(buffer));
+				publishProgress(bytesToInt(buffer));
 				Log.e("Log", Arrays.toString(buffer));
-				Log.e("Log", bytesToHex(buffer));
+				Log.e("Log", bytesToInt(buffer));
 				try {
 				    Thread.sleep(1000);
 				} catch(InterruptedException ex) {
@@ -230,6 +232,7 @@ public class ReadUsbDevicesFragment extends Fragment {
 		}
 		
 		final protected char[] hexArray = "0123456789ABCDEF".toCharArray();
+		
 		public String bytesToHex(byte[] bytes) {
 		    char[] hexChars = new char[bytes.length * 2];
 		    for ( int j = 0; j < bytes.length; j++ ) {
@@ -237,8 +240,24 @@ public class ReadUsbDevicesFragment extends Fragment {
 		        hexChars[j * 2] = hexArray[v >>> 4];
 		        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
 		    }
-		    return new String(hexChars);
+		    return Arrays.toString(hexChars);
 		}
+
+		public String bytesToInt(byte[] bytes) {
+		    char[] hexChars = new char[bytes.length * 2];
+		    int[] numbers =  new int[bytes.length];
+		    for ( int j = 0; j < bytes.length; j++ ) {
+		        int v = bytes[j] & 0xFF;
+		        hexChars[j * 2] = hexArray[v >>> 4];
+		        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+//		        String(new char[]{hexChars[j * 2], hexChars[j * 2 + 1]});
+		        numbers[j] = Integer.parseInt(new StringBuilder("").append(hexChars[j * 2]).append(hexChars[j * 2 + 1]).toString(), 16);
+		    }
+		    
+		    return Arrays.toString(numbers);
+		}
+		
+		
 		
 		@Override
 		protected void onProgressUpdate(String... buffer) {
