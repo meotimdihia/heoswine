@@ -164,8 +164,8 @@ public class ReadUsbDevicesFragment extends Fragment {
 			connection.controlTransfer(0x41,0x0B,0x1FD,0x0, bytes, 0, TIMEOUT); // Out
 
 			// Get temperature and wind speed 
-			byte[] message = {80, 25, 00, 00};
-			connection.controlTransfer(0x41,0x1E,0x1FD,0x0, new byte[]{80, 25, 00, 00}, message.length, 0); // Out 80 25 00 00
+			byte[] message = {(byte) 0x80, 0x25, 00, 00};
+			connection.controlTransfer(0x41,0x1E,0x1FD,0x0, message, message.length, 0); // Out 80 25 00 00
 			 
 			connection.controlTransfer(0x41,0x07,0x0202,0x0, bytes, 0, TIMEOUT); // Out
 			 
@@ -217,11 +217,25 @@ public class ReadUsbDevicesFragment extends Fragment {
 				connection.bulkTransfer(epIN, buffer, epIN.getMaxPacketSize(), 100);
 				StringBuilder hex = new StringBuilder(buffer.length * 2);
 				
+				
+				
+				int[] data = bytesToInt(buffer);
+				int[] filterdata = null;
+				
+				if (data[0] == 0 && data[1] != 0) {
+					filterdata = Arrays.copyOfRange(data, 0, 14);
+				}
+				if (filterdata == null) {
+					continue;
+				}
+				
 				publishProgress(Arrays.toString(buffer));
 				publishProgress(bytesToHex(buffer));
-				publishProgress(bytesToInt(buffer));
+				publishProgress(Arrays.toString(data));
+				publishProgress(Arrays.toString(filterdata));
+				publishProgress("-----------------------------");
 				Log.e("Log", Arrays.toString(buffer));
-				Log.e("Log", bytesToInt(buffer));
+//				Log.e("Log", bytesToInt(buffer));
 				try {
 				    Thread.sleep(1000);
 				} catch(InterruptedException ex) {
@@ -243,7 +257,7 @@ public class ReadUsbDevicesFragment extends Fragment {
 		    return Arrays.toString(hexChars);
 		}
 
-		public String bytesToInt(byte[] bytes) {
+		public int[] bytesToInt(byte[] bytes) {
 		    char[] hexChars = new char[bytes.length * 2];
 		    int[] numbers =  new int[bytes.length];
 		    for ( int j = 0; j < bytes.length; j++ ) {
@@ -254,10 +268,11 @@ public class ReadUsbDevicesFragment extends Fragment {
 		        numbers[j] = Integer.parseInt(new StringBuilder("").append(hexChars[j * 2]).append(hexChars[j * 2 + 1]).toString(), 16);
 		    }
 		    
-		    return Arrays.toString(numbers);
+		    return numbers;
 		}
 		
 		
+		int rindex = 0;
 		
 		@Override
 		protected void onProgressUpdate(String... buffer) {
@@ -272,7 +287,9 @@ public class ReadUsbDevicesFragment extends Fragment {
 	        td.setText(Arrays.toString(buffer));
 	        Log.e("Log", Arrays.toString(buffer));
 			tr.addView(td);
-			tabledata.addView(tr);
+			
+			Log.e("Log", Integer.toString(rindex));
+			tabledata.addView(tr, 0);
 		}
 		
 

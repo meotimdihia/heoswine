@@ -1,22 +1,8 @@
 package com.heocompany.hpswine;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import com.utility.HttpRequest;
-
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
-import android.util.Log;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
