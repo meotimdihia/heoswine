@@ -199,12 +199,9 @@ public class ReadUsbDevicesFragment extends Fragment {
 
 			connection.bulkTransfer(epIN, new byte[epIN.getMaxPacketSize()], epIN.getMaxPacketSize(), 100);	 // 1 bytes 00
 			 
-			connection.bulkTransfer(epIN, new byte[epIN.getMaxPacketSize()], epIN.getMaxPacketSize(), 100);	 // 512 bytes = 0x200 
-			 
-			connection.controlTransfer(0x41,0x0B,0x01FD,0x0, bytes, 0, TIMEOUT); // Out
-			 
-			connection.controlTransfer(0xC1,0x10,0x0,0x0, new byte[14], 14, TIMEOUT); // In 04, 00, 00, 00, 00, 00, 00, 01, 00 ....
+			connection.bulkTransfer(epIN, new byte[epIN.getMaxPacketSize()], epIN.getMaxPacketSize(), 100);	 // 512 bytes = 0x200 			
 			
+
 			
 			byte[] buffer = new byte[epIN.getMaxPacketSize()];
 
@@ -213,28 +210,36 @@ public class ReadUsbDevicesFragment extends Fragment {
 //				connection.bulkTransfer(epIN, buffer1, 1, 100);
 //				Log.e("Log", Integer.toString(data));
 //				Log.e("Log", Arrays.toString(buffer1));
+				connection.controlTransfer(0x41,0x0B,0x01FD,0x0, bytes, 0, TIMEOUT); // Out
+				 
+				connection.controlTransfer(0xC1,0x10,0x0,0x0, new byte[epIN.getMaxPacketSize()], epIN.getMaxPacketSize(), TIMEOUT); // In 04, 00, 00, 00, 00, 00, 00, 01, 00 ....
+					
+				connection.bulkTransfer(epIN, buffer, 13, 300);
 				
-				connection.bulkTransfer(epIN, buffer, epIN.getMaxPacketSize(), 100);
-				StringBuilder hex = new StringBuilder(buffer.length * 2);
+//				int[] data = bytesToInt(buffer);
+//				int[] filterdata = null;
+//				
+//				if (data[0] == 0 && data[1] != 0) {
+//					filterdata = Arrays.copyOfRange(data, 0, 14);
+//				}
+//				if (filterdata == null) {
+//					continue;
+//				}
 				
+//				publishProgress("buffer " + Arrays.toString(buffer));
+				char[] hexdata = bytesToHex(buffer);
 				
-				
-				int[] data = bytesToInt(buffer);
-				int[] filterdata = null;
-				
-				if (data[0] == 0 && data[1] != 0) {
-					filterdata = Arrays.copyOfRange(data, 0, 14);
-				}
-				if (filterdata == null) {
-					continue;
-				}
-				
-				publishProgress(Arrays.toString(buffer));
-				publishProgress(bytesToHex(buffer));
-				publishProgress(Arrays.toString(data));
-				publishProgress(Arrays.toString(filterdata));
+				Log.e("LOG", new String(hexdata));
+				String var1 = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 2, 6)), 16));
+				String var2 = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 18, 22)), 16));
+				String var3 = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 10, 14)), 16));
+//				int var3 = Integer.parseInt(Arrays.toString(Arrays.copyOfRange(hexdata, 0, 4)), 16);
+				publishProgress("RH: " + var1 + " Wind Speed: " + var2 + " Temperature: " + var3);
+				publishProgress(new String(hexdata));
+//				publishProgress(Arrays.toString(data)); 
+//				publishProgress(Arrays.toString(filterdata));
 				publishProgress("-----------------------------");
-				Log.e("Log", Arrays.toString(buffer));
+				
 //				Log.e("Log", bytesToInt(buffer));
 				try {
 				    Thread.sleep(1000);
@@ -246,15 +251,14 @@ public class ReadUsbDevicesFragment extends Fragment {
 		}
 		
 		final protected char[] hexArray = "0123456789ABCDEF".toCharArray();
-		
-		public String bytesToHex(byte[] bytes) {
+		public char[] bytesToHex(byte[] bytes) {
 		    char[] hexChars = new char[bytes.length * 2];
 		    for ( int j = 0; j < bytes.length; j++ ) {
 		        int v = bytes[j] & 0xFF;
 		        hexChars[j * 2] = hexArray[v >>> 4];
 		        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
 		    }
-		    return Arrays.toString(hexChars);
+		    return hexChars;
 		}
 
 		public int[] bytesToInt(byte[] bytes) {
@@ -287,8 +291,6 @@ public class ReadUsbDevicesFragment extends Fragment {
 	        td.setText(Arrays.toString(buffer));
 	        Log.e("Log", Arrays.toString(buffer));
 			tr.addView(td);
-			
-			Log.e("Log", Integer.toString(rindex));
 			tabledata.addView(tr, 0);
 		}
 		
