@@ -232,9 +232,16 @@ public class ReadUsbDevicesFragment extends Fragment {
 				if (hexdata[0] == '0' && hexdata[1] == '0') {
 					hexdata = Arrays.copyOfRange(hexdata, 2, hexdata.length);
 				}
+				Log.e("Log", new String(hexdata));
+				
+				String tempMode = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 0, 2)), 16));
+				
 				String var1 = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 2, 6)), 16));
 				String var2 = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 18, 22)), 16));
 				String var3 = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 10, 14)), 16));
+				String windSpeedDecimal = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 14, 16)), 16));
+				String windSpeedMode = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 16, 18)), 16));
+				
 //				int var3 = Integer.parseInt(Arrays.toString(Arrays.copyOfRange(hexdata, 0, 4)), 16);
 				publishProgress("RH: " + var1 + " Wind Speed: " + var2 + " Temperature: " + var3);
 				publishProgress(new String(hexdata));
