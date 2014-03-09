@@ -24,22 +24,30 @@ import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
-public class ReadUsbDevicesFragment extends Fragment {
+public class ReadUsbDevicesFragment extends Fragment implements OnClickListener {
 
 	private byte[] bytes = {};
 	private static int TIMEOUT = 2000;
 	private boolean forceClaim = true;
+	private AsyncTask readUsbTask;
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.read_usb, container, false);
+    	
+    	View v = inflater.inflate(R.layout.read_usb, container, false);
+        ToggleButton b = (ToggleButton) v.findViewById(R.id.toggleRead);
+        b.setOnClickListener(this);
+        
+        return v;
     }
 
     @Override
@@ -48,10 +56,14 @@ public class ReadUsbDevicesFragment extends Fragment {
     	// get permission and read info temperature device
     	getPermissionAndInfo();
 	    // run background read temperature info
-	    new ReadTemperatureDeviceTask().execute();
+    	readUsbTask = new ReadTemperatureDeviceTask().execute();
     }
     
     private void getPermissionAndInfo() {
+    	// Turn on 
+    	ToggleButton toggleRead = (ToggleButton) getActivity().findViewById(R.id.toggleRead);
+    	toggleRead.setChecked(true);
+    	
 	    UsbManager manager = (UsbManager) getActivity().getSystemService(Context.USB_SERVICE);
 	    // Get the list of attached devices
 	    HashMap<String, UsbDevice> devices = manager.getDeviceList();
@@ -88,7 +100,7 @@ public class ReadUsbDevicesFragment extends Fragment {
 	    }
 	    
 	    
-	    TextView descText = (TextView)getActivity().findViewById(R.id.description);
+	    TextView descText = (TextView) getActivity().findViewById(R.id.description);
 	    descText.setText(Html.fromHtml("	<strong>Device Number</strong>: " + devices.size() + "<br/>"
 	    								+	"<strong>DeviceName</strong>: " + deviceName + "<br/>"
 										+	"<strong>VID</strong>: " + VID + "<br/>"
@@ -141,6 +153,7 @@ public class ReadUsbDevicesFragment extends Fragment {
 		    UsbDeviceConnection connection = usbManager.openDevice(tDevice); 
 		    if (!connection.claimInterface(intf, forceClaim)) {
 		    	Log.e("LOG", "Can not to claim interface");
+		    	System.exit(0);
 		    }
 		    Log.e("LOG", endpoint.toString());
 	   
@@ -176,7 +189,7 @@ public class ReadUsbDevicesFragment extends Fragment {
 			byte[] message1 = {0x1A, 00, 00, 00, 0x11, 0x13};
 			connection.controlTransfer(0x41,0x19,0x0,0x0, message1, message1.length, 0); // Out
 			 
-			byte[] message2 = {0x1, 00, 00, 00, 0x4, 00, 00, 00, 0x01, 00, 00, 00, 0x01, 00, 00};
+			byte[] message2 = {0x1, 00, 00, 00, 0x40, 00, 00, 00, 00, 0x01, 00, 00, 00, 0x01, 00, 00};
 			connection.controlTransfer(0x41,0x13,0x0,0x0, message2, message2.length, 0); // Out
 			 
 			connection.controlTransfer(0xC1,0x8,0x0,0x0, new byte[2], 2, TIMEOUT); // In 03
@@ -190,7 +203,7 @@ public class ReadUsbDevicesFragment extends Fragment {
 			connection.controlTransfer(0xC1,0x10,0x0,0x0, new byte[14], 14, TIMEOUT); // In 08, 00, ...
 			 
 			connection.controlTransfer(0xC1,0x8,0x0,0x0, new byte[2], 2, TIMEOUT); // In 03
-			 
+			
 			connection.controlTransfer(0xC1,0x8,0x0,0x0, new byte[2], 2, TIMEOUT); // In 03
 			 
 			connection.controlTransfer(0xC1,0x8,0x0,0x0, new byte[2], 2, TIMEOUT); // In 03
@@ -206,6 +219,9 @@ public class ReadUsbDevicesFragment extends Fragment {
 			byte[] buffer = new byte[epIN.getMaxPacketSize()];
 
 			while (true) { 
+				
+				if (isCancelled()) break;
+				
 //			    byte[] buffer1 = new byte[1];
 //				connection.bulkTransfer(epIN, buffer1, 1, 100);
 //				Log.e("Log", Integer.toString(data));
@@ -228,11 +244,11 @@ public class ReadUsbDevicesFragment extends Fragment {
 				
 //				publishProgress("buffer " + Arrays.toString(buffer));
 				char[] hexdata = bytesToHex(buffer);
-				Log.e("LOG", new String(hexdata));
+				
 				if (hexdata[0] == '0' && hexdata[1] == '0') {
 					hexdata = Arrays.copyOfRange(hexdata, 2, hexdata.length);
 				}
-				Log.e("Log", new String(hexdata));
+				
 				
 				String tempMode = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 0, 2)), 16));
 				
@@ -251,12 +267,13 @@ public class ReadUsbDevicesFragment extends Fragment {
 				
 //				Log.e("Log", bytesToInt(buffer));
 				try {
-				    Thread.sleep(1000);
+				    Thread.sleep(400);
 				} catch(InterruptedException ex) {
 				    Thread.currentThread().interrupt();
 				}
 			}
 //			return null;
+			return null;
 		}
 		
 		final protected char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -302,7 +319,6 @@ public class ReadUsbDevicesFragment extends Fragment {
 			tr.addView(td);
 			tabledata.addView(tr, 0);
 		}
-		
 
     }
     
@@ -336,4 +352,21 @@ public class ReadUsbDevicesFragment extends Fragment {
     	        }
     	    }
     	};
+
+	@Override
+	public void onClick(final View v) {
+        switch (v.getId()) {
+	        case R.id.toggleRead:
+	        	boolean on = ((ToggleButton) v).isChecked();
+	        	if (on == false) {
+	        		readUsbTask.cancel(true);
+	        	} else {
+	        		readUsbTask = new ReadTemperatureDeviceTask().execute();
+	        	}
+	            break;
+	        }
+		
+	}
+	
+	
 }

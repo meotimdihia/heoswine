@@ -6,22 +6,32 @@
 
     <TextView
         android:id="@+id/description"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="27dp"
-        android:ems="10" />
-
+        android:ems="10"
+        android:text="description" />
+    <ToggleButton
+          android:id="@+id/toggleRead"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="ToggleButton"
+          android:onClick="onToggleClicked" />
+    
     <ScrollView
         android:id="@+id/scrolldata"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
 
         <TableLayout
             android:id="@+id/measure_table"
             android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:padding="10dp"
-            android:layout_height="fill_parent"
             android:stretchColumns="0,1" >
+
+
+
         </TableLayout>
     </ScrollView>
 
