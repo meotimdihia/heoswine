@@ -80,32 +80,39 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	    String deviceName = "";
 	    UsbDevice device = null;
 	    boolean permission = false;
-	    
-	    while (it.hasNext()) 
+	    boolean hasDevice = false;
+	    while (it.hasNext())
 	    {
 	    	deviceName = it.next();
 	        device = devices.get(deviceName);
-	        
-	        if (device != null) {
-	        	if (!manager.hasPermission(device) && device.getVendorId() == 0x10c4 && device.getProductId() == 0xea60) {
-	        		PendingIntent mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
-	        		manager.requestPermission(device, mPermissionIntent);
-	        	}
-		    }
-	        
-	        permission = manager.hasPermission(device);
-	        VID = Integer.toHexString(device.getVendorId()).toUpperCase();
-	        PID = Integer.toHexString(device.getProductId()).toUpperCase();
-		    break;
+
+	    	if (device.getVendorId() == 0x10c4 && device.getProductId() == 0xea60) {
+	    		hasDevice = true;
+		        
+		        if (device != null) {
+		        	if (!manager.hasPermission(device)) {
+		        		PendingIntent mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
+		        		manager.requestPermission(device, mPermissionIntent);
+		        	}
+			    }
+		        
+		        permission = manager.hasPermission(device);
+		        VID = Integer.toHexString(device.getVendorId()).toUpperCase();
+		        PID = Integer.toHexString(device.getProductId()).toUpperCase();
+			    break;
+	    	}
 	    }
 	    
-	    
 	    TextView descText = (TextView) getActivity().findViewById(R.id.description);
-	    descText.setText(Html.fromHtml("	<strong>Device Number</strong>: " + devices.size() + "<br/>"
+	    if (hasDevice) {
+	    	descText.setText(Html.fromHtml("	<strong>Device Number</strong>: " + devices.size() + "<br/>"
 	    								+	"<strong>DeviceName</strong>: " + deviceName + "<br/>"
 										+	"<strong>VID</strong>: " + VID + "<br/>"
 										+	"<strong>PID</strong>: " + PID+ "<br/>"
 										+	"<strong>Permission</strong>: " + permission ));
+	    } else {
+	    	descText.setText(Html.fromHtml("<em>Can not find necessary device.</em>"));
+	    }
     }
     private class ReadTemperatureDeviceTask extends AsyncTask<Void, String, Void> {
 
@@ -216,7 +223,7 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 			
 
 			
-			byte[] buffer = new byte[epIN.getMaxPacketSize()];
+			byte[] buffer = new byte[13];
 
 			while (true) { 
 				
@@ -232,6 +239,7 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 					
 				connection.bulkTransfer(epIN, buffer, 13, 300);
 				
+				 
 //				int[] data = bytesToInt(buffer);
 //				int[] filterdata = null;
 //				
@@ -249,25 +257,40 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 					hexdata = Arrays.copyOfRange(hexdata, 2, hexdata.length);
 				}
 				
+				// if this hexdata is shorten data then it is invalid
+				if (new String(hexdata).length() == 26) {
 				
-				String tempMode = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 0, 2)), 16));
-				
-				String var1 = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 2, 6)), 16));
-				String var2 = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 18, 22)), 16));
-				String var3 = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 10, 14)), 16));
-				String windSpeedDecimal = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 14, 16)), 16));
-				String windSpeedMode = Integer.toString(Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 16, 18)), 16));
-				
-//				int var3 = Integer.parseInt(Arrays.toString(Arrays.copyOfRange(hexdata, 0, 4)), 16);
-				publishProgress("RH: " + var1 + " Wind Speed: " + var2 + " Temperature: " + var3);
-				publishProgress(new String(hexdata));
-//				publishProgress(Arrays.toString(data)); 
-//				publishProgress(Arrays.toString(filterdata));
-				publishProgress("-----------------------------");
+					String rh = String.valueOf(
+							(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 2, 6)), 16) / 10
+					);
+					
+					int tempMode = Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 0, 2)), 16); // 1 is C, 2 is F
+					
+					String temp = String.valueOf(
+							(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 10, 14)), 16) / 10
+					);
+					
+					int windSpeedDecimal = Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 24, 26)), 16);
+					int windSpeedMode = Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 16, 18)), 16); // 1 is m/s, 2 km/h, 3 is mil/h, 4 is ft/m, 5 is ft/s, 6 is knots 
+					
+					
+					String wind = String.valueOf(
+							(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 18, 22)), 16) / Math.pow (10, (windSpeedDecimal - 1))
+					);
+					
+					
+	//				int var3 = Integer.parseInt(Arrays.toString(Arrays.copyOfRange(hexdata, 0, 4)), 16);
+					publishProgress("RH: " + rh + " Wind Speed: " + wind + " Temperature: " + temp + " Temperature mode: " + tempMode + " WindSpeed mode: " + windSpeedMode);
+					
+					publishProgress(new String(hexdata));
+	//				publishProgress(Arrays.toString(data)); 
+	//				publishProgress(Arrays.toString(filterdata));
+					publishProgress("-----------------------------");
+				}
 				
 //				Log.e("Log", bytesToInt(buffer));
 				try {
-				    Thread.sleep(400);
+				    Thread.sleep(500);
 				} catch(InterruptedException ex) {
 				    Thread.currentThread().interrupt();
 				}
@@ -306,8 +329,6 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 		
 		@Override
 		protected void onProgressUpdate(String... buffer) {
-			Log.e("Log", Arrays.toString(buffer));
-			// TODO Auto-generated method stub
 			super.onProgressUpdate(buffer);
 			TableLayout tabledata = (TableLayout) getActivity().findViewById(R.id.measure_table);
 			TableRow tr =  new TableRow(getActivity());
