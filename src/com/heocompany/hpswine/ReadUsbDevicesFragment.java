@@ -4,7 +4,6 @@ package com.heocompany.hpswine;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,7 +18,6 @@ import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,15 +27,16 @@ import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
+import com.loopj.android.http.*;
 
 public class ReadUsbDevicesFragment extends Fragment implements OnClickListener {
 
 	private byte[] bytes = {};
 	private static int TIMEOUT = 2000;
 	private boolean forceClaim = true;
-	private AsyncTask readUsbTask;
+	private static AsyncTask<Void, String, Void> readUsbTask;
+	private static AsyncHttpClient client = new AsyncHttpClient();
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -142,6 +141,7 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 		     
 		    UsbEndpoint epIN = null;
 	        UsbEndpoint epOUT = null; 
+	        
 	        for (int i = 0; i < intf.getEndpointCount(); i++) {
 	            Log.e("LOG", "EP: "
 	                    + String.format("0x%02X", intf.getEndpoint(i)
@@ -226,76 +226,75 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 			byte[] buffer = new byte[13];
 
 			while (true) { 
-				
-				if (isCancelled()) break;
-				
-//			    byte[] buffer1 = new byte[1];
-//				connection.bulkTransfer(epIN, buffer1, 1, 100);
-//				Log.e("Log", Integer.toString(data));
-//				Log.e("Log", Arrays.toString(buffer1));
-				connection.controlTransfer(0x41,0x0B,0x01FD,0x0, bytes, 0, TIMEOUT); // Out
-				 
-				connection.controlTransfer(0xC1,0x10,0x0,0x0, new byte[epIN.getMaxPacketSize()], epIN.getMaxPacketSize(), TIMEOUT); // In 04, 00, 00, 00, 00, 00, 00, 01, 00 ....
-					
-				connection.bulkTransfer(epIN, buffer, 13, 300);
-				
-				 
-//				int[] data = bytesToInt(buffer);
-//				int[] filterdata = null;
-//				
-//				if (data[0] == 0 && data[1] != 0) {
-//					filterdata = Arrays.copyOfRange(data, 0, 14);
-//				}
-//				if (filterdata == null) {
-//					continue;
-//				}
-				
-//				publishProgress("buffer " + Arrays.toString(buffer));
-				char[] hexdata = bytesToHex(buffer);
-				
-				if (hexdata[0] == '0' && hexdata[1] == '0') {
-					hexdata = Arrays.copyOfRange(hexdata, 2, hexdata.length);
-				}
-				
-				// if this hexdata is shorten data then it is invalid
-				if (new String(hexdata).length() == 26) {
-				
-					String rh = String.valueOf(
-							(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 2, 6)), 16) / 10
-					);
-					
-					int tempMode = Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 0, 2)), 16); // 1 is C, 2 is F
-					
-					String temp = String.valueOf(
-							(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 10, 14)), 16) / 10
-					);
-					
-					int windSpeedDecimal = Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 24, 26)), 16);
-					int windSpeedMode = Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 16, 18)), 16); // 1 is m/s, 2 km/h, 3 is mil/h, 4 is ft/m, 5 is ft/s, 6 is knots 
-					
-					
-					String wind = String.valueOf(
-							(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 18, 22)), 16) / Math.pow (10, (windSpeedDecimal - 1))
-					);
-					
-					
-	//				int var3 = Integer.parseInt(Arrays.toString(Arrays.copyOfRange(hexdata, 0, 4)), 16);
-					publishProgress("RH: " + rh + " Wind Speed: " + wind + " Temperature: " + temp + " Temperature mode: " + tempMode + " WindSpeed mode: " + windSpeedMode);
-					
-					publishProgress(new String(hexdata));
-	//				publishProgress(Arrays.toString(data)); 
-	//				publishProgress(Arrays.toString(filterdata));
-					publishProgress("-----------------------------");
-				}
-				
-//				Log.e("Log", bytesToInt(buffer));
 				try {
-				    Thread.sleep(500);
+					if (isCancelled()) break;
+					
+					connection.controlTransfer(0x41,0x0B,0x01FD,0x0, bytes, 0, TIMEOUT); // Out
+					 
+					connection.controlTransfer(0xC1,0x10,0x0,0x0, new byte[epIN.getMaxPacketSize()], epIN.getMaxPacketSize(), TIMEOUT); // In 04, 00, 00, 00, 00, 00, 00, 01, 00 ....
+						
+					connection.bulkTransfer(epIN, buffer, 13, 300);
+					
+					char[] hexdata = bytesToHex(buffer);
+	
+					if (hexdata[0] == '0' && hexdata[1] == '0') {
+						hexdata = Arrays.copyOfRange(hexdata, 2, hexdata.length);
+					}
+					
+					// if this hexdata is shorten data then it is invalid
+					if (new String(hexdata).length() == 26) {
+					
+						String rh = String.valueOf(
+								(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 2, 6)), 16) / 10
+						);
+						
+						// check if rh is valid number
+						if (Float.parseFloat(rh) > 1000 || Float.parseFloat(rh) == 0) {
+							throw new Exception("test");
+						}
+						int tempMode = Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 0, 2)), 16); // 1 is C, 2 is F
+						
+						String temp = String.valueOf(
+								(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 10, 14)), 16) / 10
+						);
+						
+						int windSpeedDecimal = Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 22, 24)), 16);
+						int windSpeedMode = Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 16, 18)), 16); // 1 is m/s, 2 km/h, 3 is mil/h, 4 is ft/m, 5 is ft/s, 6 is knots 
+						
+						
+						String wind = String.valueOf(
+								(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 18, 22)), 16) / Math.pow (10, (windSpeedDecimal - 1))
+						);
+						
+						RequestParams postdata = new RequestParams();
+						postdata.put("rh", rh);
+						postdata.put("temp", temp);
+						postdata.put("wind", wind);
+						postdata.put("windSpeedMode", windSpeedMode);
+						postdata.put("tempMode", tempMode);
+						
+						client.get("http://facebook.com", postdata, new AsyncHttpResponseHandler() {
+						    @Override
+						    public void onSuccess(String response) {
+						        Log.e("RESPONES" , response);
+						    }
+						});
+						
+						publishProgress("RH: " + rh + " Wind Speed: " + wind + " Temperature: " + temp + " Temperature mode: " + tempMode + " WindSpeed mode: " + windSpeedMode);
+						publishProgress(new String(hexdata));
+						publishProgress("-----------------------------");
+					}
+				} catch (Exception e) {
+					
+				}
+
+				try {
+				    Thread.sleep(400);
 				} catch(InterruptedException ex) {
 				    Thread.currentThread().interrupt();
 				}
 			}
-//			return null;
+
 			return null;
 		}
 		
@@ -324,12 +323,10 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 		    return numbers;
 		}
 		
-		
-		int rindex = 0;
-		
 		@Override
 		protected void onProgressUpdate(String... buffer) {
 			super.onProgressUpdate(buffer);
+			
 			TableLayout tabledata = (TableLayout) getActivity().findViewById(R.id.measure_table);
 			TableRow tr =  new TableRow(getActivity());
 			TextView td = new TextView(getActivity());
