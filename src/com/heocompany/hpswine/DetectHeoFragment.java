@@ -1,15 +1,12 @@
 package com.heocompany.hpswine;
 
-
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.ToggleButton;
+import android.widget.Button;
 
 public class DetectHeoFragment extends Fragment implements OnClickListener {
     
@@ -18,11 +15,26 @@ public class DetectHeoFragment extends Fragment implements OnClickListener {
         Bundle savedInstanceState) {
     	
     	View v = inflater.inflate(R.layout.detect_heo, container, false);
-        ToggleButton b = (ToggleButton) v.findViewById(R.id.toggleRead);
+        Button b = (Button) v.findViewById(R.id.submit_info);
         b.setOnClickListener(this);
         
         return v;
-    }
+    } 
+
+	@Override
+	public void onClick(final View v) {
+        switch (v.getId()) {
+	        case R.id.toggleRead:
+//	        	boolean on = ((ToggleButton) v).isChecked();
+//	        	if (on == false) {
+//	        		readUsbTask.cancel(true);
+//	        	} else {
+//	        		readUsbTask = new ReadTemperatureDeviceTask().execute();
+//	        	}
+//	            break;
+	        }
+		
+	}
     
 //    HeoSQLite sqlite = new HeoSQLite(this);
 //    SQLiteDatabase db = sqlite.getWritableDatabase();

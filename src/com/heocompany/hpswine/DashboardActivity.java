@@ -1,8 +1,5 @@
 package com.heocompany.hpswine;
 
-
-
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -66,7 +63,7 @@ public class DashboardActivity extends FragmentActivity
 		}
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
 		
-		transaction.replace(R.id.fragment_container, new ReadUsbDevicesFragment());
+		transaction.replace(R.id.fragment_container, new DetectHeoFragment());
         transaction.addToBackStack(null);
 
         // Commit the transaction

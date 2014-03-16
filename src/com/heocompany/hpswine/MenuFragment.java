@@ -19,8 +19,8 @@ public class MenuFragment extends ListFragment {
 	onMenuSelectedListener mCallback;
 	
 	static {
-		menu.put("DetectHeo", "Detect Heo");
 		menu.put("ReadUsbDevices", "Read Usb Devices");
+		menu.put("DetectHeo", "Detect Heo");
 	}
 	
     public interface onMenuSelectedListener {       
