@@ -3,19 +3,19 @@ package com.heocompany.hpswine;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
 import com.heocompany.hpswine.HeoSQLite;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
-
-
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        new HeoSQLite(this);
         
 //        setContentView(R.layout.activity_main);
         
