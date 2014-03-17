@@ -114,7 +114,7 @@ public class DashboardActivity extends FragmentActivity
 	
 
 	public boolean dispatchKeyEvent(KeyEvent event) {
-		final EditText idHeoInput  = (EditText) this.findViewById(R.id.editText1);
+		final EditText idHeoInput  = (EditText) this.findViewById(R.id.heoid_text);
 		
 		int keyCode = event.getKeyCode();
 		char key = (char)event.getUnicodeChar();

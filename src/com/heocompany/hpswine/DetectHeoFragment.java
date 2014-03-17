@@ -1,5 +1,7 @@
 package com.heocompany.hpswine;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,6 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import com.heocompany.hpswine.HeoSQLite;
 
 public class DetectHeoFragment extends Fragment implements OnClickListener {
     
@@ -24,25 +29,23 @@ public class DetectHeoFragment extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(final View v) {
         switch (v.getId()) {
-	        case R.id.toggleRead:
-//	        	boolean on = ((ToggleButton) v).isChecked();
-//	        	if (on == false) {
-//	        		readUsbTask.cancel(true);
-//	        	} else {
-//	        		readUsbTask = new ReadTemperatureDeviceTask().execute();
-//	        	}
-//	            break;
+	        case R.id.submit_info:
+	        	EditText id = (EditText) v.findViewById(R.id.heoid_text);
+	        	EditText weight = (EditText) v.findViewById(R.id.heoweight_text);
+	        	
+	        	// save to SQLite
+				HeoSQLite sqlite = new HeoSQLite(getActivity());
+				SQLiteDatabase db = sqlite.getWritableDatabase();
+//				db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});
+				ContentValues content = new ContentValues();
+				content.put("url", "http://google.com");
+				content.put("data", "{id:" + id.getText() + ", weight:" + weight.getText()+ "}");
+				if (db.insert("data_queue", null, content ) != -1) {
+					Toast.makeText(getActivity(), "Saved weight for " + id, 1);
+				}
+	            break;
 	        }
 		
 	}
-    
-//    HeoSQLite sqlite = new HeoSQLite(this);
-//    SQLiteDatabase db = sqlite.getWritableDatabase();
-//    db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{data:1}"});
-//    ContentValues content = new ContentValues();
-//    content.put("url", "ldfsjsd");
-//    content.put("data", "ldfsjsd");
-//    db.insert("data_queue", null, content );
-    
     
 }
