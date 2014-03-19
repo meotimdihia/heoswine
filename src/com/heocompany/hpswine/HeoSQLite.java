@@ -3,6 +3,7 @@ package com.heocompany.hpswine;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 
 public class HeoSQLite extends SQLiteOpenHelper {
@@ -18,6 +19,7 @@ public class HeoSQLite extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+    	Log.e("logloglog", "dsjljfsldfdlls"); 
         db.execSQL(DICTIONARY_TABLE_CREATE);
     }
 

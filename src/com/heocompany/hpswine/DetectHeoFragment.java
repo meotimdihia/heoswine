@@ -30,18 +30,20 @@ public class DetectHeoFragment extends Fragment implements OnClickListener {
 	public void onClick(final View v) {
         switch (v.getId()) {
 	        case R.id.submit_info:
-	        	EditText id = (EditText) v.findViewById(R.id.heoid_text);
-	        	EditText weight = (EditText) v.findViewById(R.id.heoweight_text);
+	        	EditText idheo = (EditText) getActivity().findViewById(R.id.heoid_text);
+	        	EditText weight = (EditText) getActivity().findViewById(R.id.heoweight_text);
 	        	
 	        	// save to SQLite
 				HeoSQLite sqlite = new HeoSQLite(getActivity());
 				SQLiteDatabase db = sqlite.getWritableDatabase();
 //				db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});
+
 				ContentValues content = new ContentValues();
 				content.put("url", "http://google.com");
-				content.put("data", "{id:" + id.getText() + ", weight:" + weight.getText()+ "}");
+				content.put("data", "{id:" + idheo.getText()
+						+ ", weight:" + weight.getText()+ "}");
 				if (db.insert("data_queue", null, content ) != -1) {
-					Toast.makeText(getActivity(), "Saved weight for " + id, 1);
+					Toast.makeText(getActivity(), "Saved weight for " + idheo, 1);
 				}
 	            break;
 	        }
