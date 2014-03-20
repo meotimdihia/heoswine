@@ -16,7 +16,7 @@ import com.heocompany.hpswine.HeoSQLite;
 public class DetectHeoFragment extends Fragment implements OnClickListener {
     
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
     	
     	View v = inflater.inflate(R.layout.detect_heo, container, false);
@@ -39,7 +39,7 @@ public class DetectHeoFragment extends Fragment implements OnClickListener {
 //				db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});
 
 				ContentValues content = new ContentValues();
-				content.put("url", "http://google.com");
+				content.put("url", "http://google.com"); 
 				content.put("data", "{id:" + idheo.getText()
 						+ ", weight:" + weight.getText()+ "}");
 				if (db.insert("data_queue", null, content ) != -1) {

@@ -20,16 +20,6 @@
         android:inputType="none" />
 
     <EditText
-        android:id="@+id/editText3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/button1"
-        android:layout_alignRight="@+id/editText2"
-        android:layout_below="@+id/button1"
-        android:ems="10"
-        android:inputType="textMultiLine" />
-
-    <EditText
         android:id="@+id/heoweight_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
