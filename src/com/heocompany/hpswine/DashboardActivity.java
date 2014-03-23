@@ -1,5 +1,6 @@
 package com.heocompany.hpswine;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -68,6 +69,9 @@ public class DashboardActivity extends FragmentActivity
 
         // Commit the transaction
         transaction.commit();
+        
+        Intent databaseService = new Intent(this, ExternalDatabaseService.class);
+        startService(databaseService);
 		
 	}
 

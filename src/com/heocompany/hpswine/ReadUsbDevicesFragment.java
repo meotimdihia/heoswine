@@ -378,7 +378,7 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	        	boolean on = ((ToggleButton) v).isChecked();
 	        	if (on == false) {
 	        		readUsbTask.cancel(true);
-	        	} else {
+	        	} else { 
 	        		readUsbTask = new ReadTemperatureDeviceTask().execute();
 	        	}
 	            break;
