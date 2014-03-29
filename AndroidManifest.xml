@@ -23,7 +23,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         
-        <service android:name=".ExternalDatabaseService" />
+        <service android:name="com.heocompany.hpswine.ExternalDatabaseService" />
          
         <activity
             android:name="com.heocompany.hpswine.MainActivity"

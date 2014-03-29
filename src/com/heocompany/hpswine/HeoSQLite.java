@@ -19,7 +19,6 @@ public class HeoSQLite extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-    	Log.e("logloglog", "dsjljfsldfdlls"); 
         db.execSQL(DICTIONARY_TABLE_CREATE);
     }
 

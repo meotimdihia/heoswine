@@ -1,5 +1,13 @@
 package com.heocompany.hpswine;
 
+import java.util.Iterator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -42,12 +50,6 @@ public class DashboardActivity extends FragmentActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-//		EditText idHeoInput  = (EditText) findViewById(R.id.editText1);
-//		idHeoInput.setText("this is a text");
-//		EditText idheoinput = (EditText) findViewById(R.id.editText2);
-//		mEmailView.setText(mEmail);
-//		idheoinput.setEnabled(false);
 		
 		setContentView(R.layout.activity_dashboard);
 		if (findViewById(R.id.fragment_container) != null) {
@@ -72,7 +74,6 @@ public class DashboardActivity extends FragmentActivity
         
         Intent databaseService = new Intent(this, ExternalDatabaseService.class);
         startService(databaseService);
-		
 	}
 
 	@Override

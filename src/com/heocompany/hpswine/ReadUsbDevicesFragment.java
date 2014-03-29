@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -24,9 +26,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 import com.loopj.android.http.*;
 
@@ -36,7 +40,7 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	private static int TIMEOUT = 2000;
 	private boolean forceClaim = true;
 	private static AsyncTask<Void, String, Void> readUsbTask;
-	private static AsyncHttpClient client = new AsyncHttpClient();
+	Long cts = System.currentTimeMillis()/1000;
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -113,6 +117,7 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	    	descText.setText(Html.fromHtml("<em>Can not find necessary device.</em>"));
 	    }
     }
+    
     private class ReadTemperatureDeviceTask extends AsyncTask<Void, String, Void> {
 
 		@Override
@@ -225,6 +230,10 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 			
 			byte[] buffer = new byte[13];
 
+        	// save to SQLite
+			HeoSQLite sqlite = new HeoSQLite(getActivity());
+			SQLiteDatabase db = sqlite.getWritableDatabase();
+			
 			while (true) { 
 				try {
 					if (isCancelled()) break;
@@ -265,21 +274,28 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 						String wind = String.valueOf(
 								(float) Integer.parseInt(new String(Arrays.copyOfRange(hexdata, 18, 22)), 16) / Math.pow (10, (windSpeedDecimal - 1))
 						);
-						
-						RequestParams postdata = new RequestParams();
-						postdata.put("rh", rh);
-						postdata.put("temp", temp);
-						postdata.put("wind", wind);
-						postdata.put("windSpeedMode", windSpeedMode);
-						postdata.put("tempMode", tempMode);
-						
-						client.get("http://facebook.com", postdata, new AsyncHttpResponseHandler() {
-						    @Override
-						    public void onSuccess(String response) {
-						        Log.e("RESPONES" , response);
-						    }
-						});
-						
+			        	
+
+						/*db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});*/
+						if ((System.currentTimeMillis()/1000 - cts) > 20) { 
+							ContentValues content = new ContentValues();
+							
+							content.put("url", "http://sw.hongphucjsc.com/api/weather");
+	 
+							content.put("data","{id_site:" + 1
+									+ ", humidity:"+ rh
+									+ ", temperature:"+ temp
+									+ ", wind_speed:"+ wind
+									+ ", temp_mode:"+ tempMode
+									+ ", wind_mode:"+ windSpeedMode
+									+ "}");
+							if (db.insert("data_queue", null, content ) != -1) {
+								Log.e("Log", "Saved weather to queue");
+							} else {
+								Log.e("Log", "Can not Saved");
+							}
+							cts = System.currentTimeMillis()/1000;
+						}
 						publishProgress("RH: " + rh + " Wind Speed: " + wind + " Temperature: " + temp + " Temperature mode: " + tempMode + " WindSpeed mode: " + windSpeedMode);
 						publishProgress(new String(hexdata));
 						publishProgress("-----------------------------");
@@ -292,7 +308,7 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 				    Thread.sleep(400);
 				} catch(InterruptedException ex) {
 				    Thread.currentThread().interrupt();
-				}
+				} 
 			}
 
 			return null;
@@ -347,29 +363,30 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
         getActivity().unregisterReceiver(mUsbReceiver);
     }
     
-    private static final String ACTION_USB_PERMISSION =
-    	    "com.heocompany.hpswine.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "com.heocompany.hpswine.USB_PERMISSION";
+    
 	protected static final String TAG = null;
-    	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+	
+	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
 
-    	    public void onReceive(Context context, Intent intent) {
-    	        String action = intent.getAction();
-    	        if (ACTION_USB_PERMISSION.equals(action)) {
-    	            synchronized (this) {
-    	                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+	    public void onReceive(Context context, Intent intent) {
+	        String action = intent.getAction();
+	        if (ACTION_USB_PERMISSION.equals(action)) {
+	            synchronized (this) {
+	                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 
-    	                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-    	                    if(device != null){
-    	                      //call method to set up device communication
-    	                   }
-    	                } 
-    	                else {
-    	                    Log.d(TAG, "permission denied for device " + device);
-    	                }
-    	            }
-    	        }
-    	    }
-    	};
+	                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+	                    if(device != null){
+	                      //call method to set up device communication
+	                   }
+	                } 
+	                else {
+	                    Log.d(TAG, "permission denied for device " + device);
+	                }
+	            }
+	        }
+	    }
+	};
 
 	@Override
 	public void onClick(final View v) {
@@ -382,9 +399,8 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	        		readUsbTask = new ReadTemperatureDeviceTask().execute();
 	        	}
 	            break;
-	        }
+        }
 		
 	}
-	
 	
 }

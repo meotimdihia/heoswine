@@ -1,9 +1,13 @@
 package com.heocompany.hpswine;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,19 +36,36 @@ public class DetectHeoFragment extends Fragment implements OnClickListener {
 	        case R.id.submit_info:
 	        	EditText idheo = (EditText) getActivity().findViewById(R.id.heoid_text);
 	        	EditText weight = (EditText) getActivity().findViewById(R.id.heoweight_text);
-	        	
-	        	// save to SQLite
-				HeoSQLite sqlite = new HeoSQLite(getActivity());
-				SQLiteDatabase db = sqlite.getWritableDatabase();
-//				db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});
-
-				ContentValues content = new ContentValues();
-				content.put("url", "http://google.com"); 
-				content.put("data", "{id:" + idheo.getText()
-						+ ", weight:" + weight.getText()+ "}");
-				if (db.insert("data_queue", null, content ) != -1) {
-					Toast.makeText(getActivity(), "Saved weight for " + idheo, 1);
-				}
+	        	String idheovalue = idheo.getText().toString();
+	        	String weightvalue = weight.getText().toString();
+	        	Log.e("Log", idheovalue);
+	        	Log.e("Log", weightvalue);
+	        	if (idheovalue.equals("") || weight.equals("")) {
+		        	AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		        	builder.setMessage("You must fill inputs on this form!")
+		        	       .setCancelable(false)
+		        	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		        	           public void onClick(DialogInterface dialog, int id) {
+		        	                //do things
+		        	           }
+		        	       });
+		        	AlertDialog alert = builder.create();
+		        	alert.show();
+	        	} else {
+	        		Log.e("DetectHeo", "Prepare to save data!");
+		        	// save to SQLite
+					HeoSQLite sqlite = new HeoSQLite(getActivity());
+					SQLiteDatabase db = sqlite.getWritableDatabase();
+	//				db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});
+	
+					ContentValues content = new ContentValues();
+					content.put("url", "http://sw.hongphucjsc.com/api/weather"); 
+					content.put("data", "{id:" + idheovalue
+							+ ", weight:" + weightvalue + "}");
+					if (db.insert("data_queue", null, content ) != -1) {
+						Toast.makeText(getActivity(), "Saved weight for " + idheo, 1);
+					}
+	        	}
 	            break;
 	        }
 		

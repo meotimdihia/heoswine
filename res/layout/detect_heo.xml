@@ -15,9 +15,10 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView1"
         android:ems="10"
-        android:editable="false"
+        
         android:hint="ID heo"
         android:inputType="none" />
+<!-- android:editable="false" -->
 
     <EditText
         android:id="@+id/heoweight_text"
