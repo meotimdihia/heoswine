@@ -4,6 +4,8 @@ package com.heocompany.hpswine;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import android.R.bool;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -32,6 +34,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
 import com.loopj.android.http.*;
 
 public class ReadUsbDevicesFragment extends Fragment implements OnClickListener {
@@ -40,6 +43,8 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	private static int TIMEOUT = 2000;
 	private boolean forceClaim = true;
 	private static AsyncTask<Void, String, Void> readUsbTask;
+	boolean needPermission = false;
+	
 	Long cts = System.currentTimeMillis()/1000;
 	
     @Override
@@ -49,23 +54,25 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
     	View v = inflater.inflate(R.layout.read_usb, container, false);
         ToggleButton b = (ToggleButton) v.findViewById(R.id.toggleRead);
         b.setOnClickListener(this);
-        
+        if (savedInstanceState == null) {
+        	// get permission and read info temperature device
+        	getPermissionAndInfo();
+        }
         return v;
     }
 
     @Override
     public void onResume() {
     	super.onResume();
-    	// get permission and read info temperature device
-    	getPermissionAndInfo();
+
 	    // run background read temperature info
     	readUsbTask = new ReadTemperatureDeviceTask().execute();
-    }
-    
-    private void getPermissionAndInfo() {
     	// Turn on 
     	ToggleButton toggleRead = (ToggleButton) getActivity().findViewById(R.id.toggleRead);
     	toggleRead.setChecked(true);
+    }
+    
+    private void getPermissionAndInfo() {
     	
 	    UsbManager manager = (UsbManager) getActivity().getSystemService(Context.USB_SERVICE);
 	    // Get the list of attached devices
@@ -107,15 +114,15 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	    }
 	    
 	    TextView descText = (TextView) getActivity().findViewById(R.id.description);
-	    if (hasDevice) {
-	    	descText.setText(Html.fromHtml("	<strong>Device Number</strong>: " + devices.size() + "<br/>"
-	    								+	"<strong>DeviceName</strong>: " + deviceName + "<br/>"
-										+	"<strong>VID</strong>: " + VID + "<br/>"
-										+	"<strong>PID</strong>: " + PID+ "<br/>"
-										+	"<strong>Permission</strong>: " + permission ));
-	    } else {
-	    	descText.setText(Html.fromHtml("<em>Can not find necessary device.</em>"));
-	    }
+//	    if (hasDevice) {
+//	    	descText.setText(Html.fromHtml("	<strong>Device Number</strong>: " + devices.size() + "<br/>"
+//	    								+	"<strong>DeviceName</strong>: " + deviceName + "<br/>"
+//										+	"<strong>VID</strong>: " + VID + "<br/>"
+//										+	"<strong>PID</strong>: " + PID+ "<br/>"
+//										+	"<strong>Permission</strong>: " + permission ));
+//	    } else {
+//	    	descText.setText(Html.fromHtml("<em>Can not find necessary device.</em>"));
+//	    }
     }
     
     private class ReadTemperatureDeviceTask extends AsyncTask<Void, String, Void> {
@@ -359,8 +366,10 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
     @Override
 	public void onPause() {
         super.onPause();
-
-        getActivity().unregisterReceiver(mUsbReceiver);
+        try {
+        	getActivity().unregisterReceiver(mUsbReceiver);
+        } catch(IllegalArgumentException e) {}
+        
     }
     
     private static final String ACTION_USB_PERMISSION = "com.heocompany.hpswine.USB_PERMISSION";

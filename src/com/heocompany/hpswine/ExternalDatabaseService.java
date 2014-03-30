@@ -98,7 +98,6 @@ public class ExternalDatabaseService extends IntentService {
 									result.append(line);
 								}
 								Log.e("Log", result.toString());
-								
 							}
 						} catch(Exception e) {
 							db.delete("data_queue", "rowid=?", new String[] {rowid});
@@ -111,7 +110,7 @@ public class ExternalDatabaseService extends IntentService {
 					
 				}
 				try {
-				    Thread.sleep(1000);
+				    Thread.sleep(5000);
 				} catch(InterruptedException ex) {
 				    Thread.currentThread().interrupt();
 				}
