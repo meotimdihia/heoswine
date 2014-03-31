@@ -43,45 +43,68 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	private static int TIMEOUT = 2000;
 	private boolean forceClaim = true;
 	private static AsyncTask<Void, String, Void> readUsbTask;
-	boolean needPermission = false;
+	boolean needPermission = true;
 	
 	Long cts = System.currentTimeMillis()/1000;
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
-    	
     	View v = inflater.inflate(R.layout.read_usb, container, false);
         ToggleButton b = (ToggleButton) v.findViewById(R.id.toggleRead);
         b.setOnClickListener(this);
-        if (savedInstanceState == null) {
-        	// get permission and read info temperature device
-        	getPermissionAndInfo();
+        if (savedInstanceState != null) {
+        	needPermission = false;
         }
         return v;
     }
 
     @Override
     public void onResume() {
-    	super.onResume();
+    	super.onResume(); 
 
-	    // run background read temperature info
-    	readUsbTask = new ReadTemperatureDeviceTask().execute();
+    	if (needPermission) {
+	    	// get permission and read info temperature device
+	    	getPermissionAndInfo();
+    	}
+//    	if (checkPermission()) {
+//		    // run background read temperature info
+//	    	readUsbTask = new ReadTemperatureDeviceTask().execute();
+//    	}
     	// Turn on 
     	ToggleButton toggleRead = (ToggleButton) getActivity().findViewById(R.id.toggleRead);
     	toggleRead.setChecked(true);
     }
+
+    public boolean checkPermission()
+    {
+    	UsbManager manager = (UsbManager) getActivity().getSystemService(Context.USB_SERVICE);
+	    HashMap<String, UsbDevice> devices = manager.getDeviceList();
+	    
+	    Iterator<String> it = devices.keySet().iterator();
+	    String deviceName = "";
+	    UsbDevice device = null;
+	    while (it.hasNext())
+	    {
+	    	deviceName = it.next();
+	        device = devices.get(deviceName);
+	    	if (device.getVendorId() == 0x10c4 && device.getProductId() == 0xea60) {
+		        if (device != null) {
+		        	if (manager.hasPermission(device)) {
+		        		return true;
+		        	}
+			    }
+	    	}
+	    }
+	    
+	    return false;
+    }
     
-    private void getPermissionAndInfo() {
-    	
-	    UsbManager manager = (UsbManager) getActivity().getSystemService(Context.USB_SERVICE);
+    private void getPermissionAndInfo()
+    {
+    	UsbManager manager = (UsbManager) getActivity().getSystemService(Context.USB_SERVICE);
 	    // Get the list of attached devices
 	    HashMap<String, UsbDevice> devices = manager.getDeviceList();
-
-
-	    
-	    IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-	    getActivity().registerReceiver(mUsbReceiver, filter);
 	    
 	    // Iterate over all devices
 	    Iterator<String> it = devices.keySet().iterator();
@@ -102,7 +125,9 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 		        if (device != null) {
 		        	if (!manager.hasPermission(device)) {
 		        		PendingIntent mPermissionIntent = PendingIntent.getBroadcast(getActivity(), 0, new Intent(ACTION_USB_PERMISSION), 0);
-		        		manager.requestPermission(device, mPermissionIntent);
+		        	    IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+		        	    getActivity().registerReceiver(this.mUsbReceiver, filter);
+		        	    manager.requestPermission(device, mPermissionIntent);
 		        	}
 			    }
 		        
@@ -114,15 +139,15 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	    }
 	    
 	    TextView descText = (TextView) getActivity().findViewById(R.id.description);
-//	    if (hasDevice) {
-//	    	descText.setText(Html.fromHtml("	<strong>Device Number</strong>: " + devices.size() + "<br/>"
-//	    								+	"<strong>DeviceName</strong>: " + deviceName + "<br/>"
-//										+	"<strong>VID</strong>: " + VID + "<br/>"
-//										+	"<strong>PID</strong>: " + PID+ "<br/>"
-//										+	"<strong>Permission</strong>: " + permission ));
-//	    } else {
-//	    	descText.setText(Html.fromHtml("<em>Can not find necessary device.</em>"));
-//	    }
+	    if (hasDevice) {
+	    	descText.setText(Html.fromHtml("	<strong>Device Number</strong>: " + devices.size() + "<br/>"
+	    								+	"<strong>DeviceName</strong>: " + deviceName + "<br/>"
+										+	"<strong>VID</strong>: " + VID + "<br/>"
+										+	"<strong>PID</strong>: " + PID+ "<br/>"
+										+	"<strong>Permission</strong>: " + permission ));
+	    } else {
+	    	descText.setText(Html.fromHtml("<em>Can not find necessary device.</em>"));
+	    }
     }
     
     private class ReadTemperatureDeviceTask extends AsyncTask<Void, String, Void> {
@@ -379,18 +404,20 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
 
 	    public void onReceive(Context context, Intent intent) {
-	        String action = intent.getAction();
+	        String action = intent.getAction();Log.e("log", "è");
 	        if (ACTION_USB_PERMISSION.equals(action)) {
 	            synchronized (this) {
 	                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-
 	                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 	                    if(device != null){
-	                      //call method to set up device communication
+	                    	//call method to set up device communication
+	                    	// run background read temperature info
+	                    	readUsbTask = new ReadTemperatureDeviceTask().execute();
 	                   }
 	                } 
 	                else {
-	                    Log.d(TAG, "permission denied for device " + device);
+	                    Log.e(TAG, "permission denied for device " + device);
+	                    Log.e("FD", "permission denied for device " + device);
 	                }
 	            }
 	        }
