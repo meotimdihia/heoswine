@@ -100,6 +100,7 @@ public class ExternalDatabaseService extends IntentService {
 								Log.e("Log", result.toString());
 							}
 						} catch(Exception e) {
+							Log.e("Log", e.getMessage());
 							db.delete("data_queue", "rowid=?", new String[] {rowid});
 						}
 					} while(cursor.moveToNext());

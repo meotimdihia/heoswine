@@ -27,8 +27,8 @@ public class MainActivity extends Activity {
 //        	e.printStackTrace();
 //		}
 //        Log.e("Log", Integer.toString(response));
-//        startLoginForm();  
-        startDashboard();
+        startLoginForm();  
+//        startDashboard();
     } 
 
 

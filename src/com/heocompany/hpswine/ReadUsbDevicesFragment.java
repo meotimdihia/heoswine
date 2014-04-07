@@ -67,10 +67,10 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	    	// get permission and read info temperature device
 	    	getPermissionAndInfo();
     	}
-//    	if (checkPermission()) {
-//		    // run background read temperature info
-//	    	readUsbTask = new ReadTemperatureDeviceTask().execute();
-//    	}
+    	if (checkPermission()) {
+		    // run background read temperature info
+	    	readUsbTask = new ReadTemperatureDeviceTask().execute();
+    	}
     	// Turn on 
     	ToggleButton toggleRead = (ToggleButton) getActivity().findViewById(R.id.toggleRead);
     	toggleRead.setChecked(true);
@@ -404,7 +404,7 @@ public class ReadUsbDevicesFragment extends Fragment implements OnClickListener 
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
 
 	    public void onReceive(Context context, Intent intent) {
-	        String action = intent.getAction();Log.e("log", "è");
+	        String action = intent.getAction();Log.e("log", "ï¿½");
 	        if (ACTION_USB_PERMISSION.equals(action)) {
 	            synchronized (this) {
 	                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);

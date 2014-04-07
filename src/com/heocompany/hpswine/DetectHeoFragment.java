@@ -56,10 +56,10 @@ public class DetectHeoFragment extends Fragment implements OnClickListener {
 		        	// save to SQLite
 					HeoSQLite sqlite = new HeoSQLite(getActivity());
 					SQLiteDatabase db = sqlite.getWritableDatabase();
-	//				db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});
+					// db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});
 	
 					ContentValues content = new ContentValues();
-					content.put("url", "http://sw.hongphucjsc.com/api/weather"); 
+					content.put("url", "http://sw.hongphucjsc.com/api/update-profile/" + idheovalue); 
 					content.put("data", "{id:" + idheovalue
 							+ ", weight:" + weightvalue + "}");
 					if (db.insert("data_queue", null, content ) != -1) {

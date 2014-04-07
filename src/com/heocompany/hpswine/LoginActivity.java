@@ -1,5 +1,16 @@
 package com.heocompany.hpswine;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -9,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -148,7 +160,59 @@ public class LoginActivity extends Activity {
 			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
 			showProgress(true);
 			mAuthTask = new UserLoginTask();
-			mAuthTask.execute((Void) null);
+			Log.e("Log", "Start request Login api");
+			AsyncHttpClient client = new AsyncHttpClient();
+			RequestParams params = new RequestParams();
+			params.put("email", mEmail);
+			params.put("password", mPassword);
+			
+			client.post("http://sw.hongphucjsc.com/api/login", params, new AsyncHttpResponseHandler() {
+
+				@Override
+				public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+					String response;
+					try {
+						response = new String(responseBody, "UTF-8");
+						Log.e("Log", response);
+						JSONObject jResponse = new JSONObject(response);
+						int status = jResponse.getInt("status");
+						
+						//startDashboard
+						if (status == 1){
+							Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+							startActivity(intent);
+						} else {
+							// type invalid user or password
+							showProgress(false);
+							mPasswordView.setError(getString(R.string.error_incorrect_password));
+							mPasswordView.requestFocus();
+						}
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					
+				}
+
+				@Override
+				public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error)
+				{
+					String response;
+					try {
+						response = new String(responseBody, "UTF-8");
+						Log.e("Log", response);
+					} catch (UnsupportedEncodingException e) {
+						// 
+						e.printStackTrace();
+					}
+				}
+			    
+			});
+			
+//			mAuthTask.execute((Void) null);
 		}
 	}
 
