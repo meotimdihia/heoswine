@@ -22,9 +22,9 @@ public class HeoSQLite extends SQLiteOpenHelper {
         db.execSQL(DICTIONARY_TABLE_CREATE);
     }
 
-	@Override
-	public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
+        // TODO Auto-generated method stub
+        
+    }
 }

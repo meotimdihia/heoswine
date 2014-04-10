@@ -22,60 +22,60 @@ import com.heocompany.hpswine.HeoSQLite;
 public class DetectHeoFragment extends Fragment implements OnClickListener {
     
     @Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
 
-    	SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-    	SharedPreferences.Editor editor = sharedPref.edit();
-    	editor.putInt("highcore", 87);
-    	editor.commit();
-    	
-    	View v = inflater.inflate(R.layout.detect_heo, container, false);
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("highcore", 87);
+        editor.commit();
+        
+        View v = inflater.inflate(R.layout.detect_heo, container, false);
         Button b = (Button) v.findViewById(R.id.submit_info);
         b.setOnClickListener(this);
         
         return v;
     } 
 
-	@Override
-	public void onClick(final View v) {
+    @Override
+    public void onClick(final View v) {
         switch (v.getId()) {
-	        case R.id.submit_info:
-	        	EditText idheo = (EditText) getActivity().findViewById(R.id.heoid_text);
-	        	EditText weight = (EditText) getActivity().findViewById(R.id.heoweight_text);
-	        	String idheovalue = idheo.getText().toString();
-	        	String weightvalue = weight.getText().toString();
-	        	Log.e("Log", idheovalue);
-	        	Log.e("Log", weightvalue);
-	        	if (idheovalue.equals("") || weight.equals("")) {
-		        	AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		        	builder.setMessage("You must fill inputs on this form!")
-		        	       .setCancelable(false)
-		        	       .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-		        	           public void onClick(DialogInterface dialog, int id) {
-		        	                //do things
-		        	           }
-		        	       });
-		        	AlertDialog alert = builder.create();
-		        	alert.show();
-	        	} else {
-	        		Log.e("DetectHeo", "Prepare to save data!");
-		        	// save to SQLite
-					HeoSQLite sqlite = new HeoSQLite(getActivity());
-					SQLiteDatabase db = sqlite.getWritableDatabase();
-					// db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});
-	
-					ContentValues content = new ContentValues();
-					content.put("url", "http://sw.hongphucjsc.com/api/update-profile/" + idheovalue); 
-					content.put("data", "{id:" + idheovalue
-							+ ", weight:" + weightvalue + "}");
-					if (db.insert("data_queue", null, content ) != -1) {
-						Toast.makeText(getActivity(), "Saved weight for " + idheo, 1);
-					}
-	        	}
-	            break;
-	        }
-		
-	}
+            case R.id.submit_info:
+                EditText idheo = (EditText) getActivity().findViewById(R.id.heoid_text);
+                EditText weight = (EditText) getActivity().findViewById(R.id.heoweight_text);
+                String idheovalue = idheo.getText().toString();
+                String weightvalue = weight.getText().toString();
+                Log.e("Log", idheovalue);
+                Log.e("Log", weightvalue);
+                if (idheovalue.equals("") || weight.equals("")) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setMessage("You must fill inputs on this form!")
+                           .setCancelable(false)
+                           .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                               public void onClick(DialogInterface dialog, int id) {
+                                    //do things
+                               }
+                           });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                } else {
+                    Log.e("DetectHeo", "Prepare to save data!");
+                    // save to SQLite
+                    HeoSQLite sqlite = new HeoSQLite(getActivity());
+                    SQLiteDatabase db = sqlite.getWritableDatabase();
+                    // db.rawQuery("INSERT INTO data_queue VALUES(?, ?)", new String[] {"http://google.com", "{id:" + id + ", weight:" + weight.getText() + "}"});
+    
+                    ContentValues content = new ContentValues();
+                    content.put("url", "http://sw.hongphucjsc.com/api/update-profile/" + idheovalue); 
+                    content.put("data", "{id:" + idheovalue
+                            + ", weight:" + weightvalue + "}");
+                    if (db.insert("data_queue", null, content ) != -1) {
+                        Toast.makeText(getActivity(), "Saved weight for " + idheo, 1);
+                    }
+                }
+                break;
+            }
+        
+    }
     
 }

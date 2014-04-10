@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
-	
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -15,17 +15,17 @@ public class MainActivity extends Activity {
 //        setContentView(R.layout.activity_main);
         
 //        try {
-//        	
-//	        URL url = new URL("http://www.android.com/");
-//	        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-//	   
-//	        	
-//	            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-//	 
+//          
+//          URL url = new URL("http://www.android.com/");
+//          HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//     
+//              
+//              InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+//   
 //
 //        } catch (Exception e) {
-//        	e.printStackTrace();
-//		}
+//          e.printStackTrace();
+//      }
 //        Log.e("Log", Integer.toString(response));
         startLoginForm();  
 //        startDashboard();
@@ -40,14 +40,14 @@ public class MainActivity extends Activity {
     
     public void startLoginForm()
     {
-    	Intent intent = new Intent(this, LoginActivity.class);
-		startActivity(intent);
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
     
     public void startDashboard()
     {
-    	Intent intent = new Intent(this, DashboardActivity.class);
-		startActivity(intent);
+        Intent intent = new Intent(this, DashboardActivity.class);
+        startActivity(intent);
     }   
     
 }
