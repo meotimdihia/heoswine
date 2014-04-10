@@ -15,7 +15,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,7 +50,7 @@ public class LoginActivity extends Activity {
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
 	 */
-	private UserLoginTask mAuthTask = null;
+	private boolean mAuthTask = false;
 
 	// Values for email and password at the time of the login attempt.
 	private String mEmail;
@@ -60,13 +62,25 @@ public class LoginActivity extends Activity {
 	private View mLoginFormView;
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
-
+	
+	private SharedPreferences pref;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		pref = getSharedPreferences("com.hpswine.token", Context.MODE_PRIVATE);
 		setContentView(R.layout.activity_login);
+		
+    	String token = pref.getString("token", "");
+    	
+    	// token was stored in shared preferences -> switch to dashboard.
+    	if (!token.equals("")) {
+    		Log.e("Log", "Found this token: " + token);
+    		Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+			startActivity(intent);
+    	}
 
+//		Log.e("Log", String.valueOf(pref.getInt("tests", 113)));
 		
 		// Set up the login form.
 		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
@@ -74,30 +88,30 @@ public class LoginActivity extends Activity {
 //		mEmailView.setText(mEmail);
 
 		mPasswordView = (EditText) findViewById(R.id.password);
-		mPasswordView
-				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-					@Override
-					public boolean onEditorAction(TextView textView, int id,
-							KeyEvent keyEvent) {
-						if (id == R.id.login || id == EditorInfo.IME_NULL) {
-							attemptLogin();
-							return true;
-						}
-						return false;
-					}
-				});
+//		mPasswordView
+//				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//					@Override
+//					public boolean onEditorAction(TextView textView, int id,
+//							KeyEvent keyEvent) {
+//						if (id == R.id.login || id == EditorInfo.IME_NULL) {
+//							attemptLogin();
+//							return true;
+//						}
+//						return false;
+//					}
+//				}); 
 
 		mLoginFormView = findViewById(R.id.login_form);
 		mLoginStatusView = findViewById(R.id.login_status);
 		mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
 
-		findViewById(R.id.sign_in_button).setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						attemptLogin();
-					}
-				});
+//		findViewById(R.id.sign_in_button).setOnClickListener(
+//				new View.OnClickListener() {
+//					@Override
+//					public void onClick(View view) {
+//						attemptLogin();
+//					}
+//				});
 	}
 
 	@Override
@@ -112,10 +126,11 @@ public class LoginActivity extends Activity {
 	 * If there are form errors (invalid email, missing fields, etc.), the
 	 * errors are presented and no actual login attempt is made.
 	 */
-	public void attemptLogin() {
-		if (mAuthTask != null) {
+	public void attemptLogin(View view) {
+		Log.e("Log", "attempt Login");
+		if (mAuthTask) {
 			return;
-		}
+		} 
 
 		// Reset errors.
 		mEmailView.setError(null);
@@ -129,7 +144,7 @@ public class LoginActivity extends Activity {
 		View focusView = null;
 
 		// Check for a valid password.
-		if (TextUtils.isEmpty(mPassword)) {
+		if (TextUtils.isEmpty(mPassword)) { 
 			mPasswordView.setError(getString(R.string.error_field_required));
 			focusView = mPasswordView;
 			cancel = true;
@@ -159,13 +174,13 @@ public class LoginActivity extends Activity {
 			// perform the user login attempt.
 			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
 			showProgress(true);
-			mAuthTask = new UserLoginTask();
+
 			Log.e("Log", "Start request Login api");
 			AsyncHttpClient client = new AsyncHttpClient();
 			RequestParams params = new RequestParams();
 			params.put("email", mEmail);
 			params.put("password", mPassword);
-			
+			mAuthTask = true;
 			client.post("http://sw.hongphucjsc.com/api/login", params, new AsyncHttpResponseHandler() {
 
 				@Override
@@ -179,18 +194,28 @@ public class LoginActivity extends Activity {
 						
 						//startDashboard
 						if (status == 1){
+							
+							
+							JSONObject data = jResponse.getJSONObject("data");
+							String token = data.getString("token");
+							Log.e("Log", token);
+					    	pref.edit().putString("token", token).commit();
+					    	
+							finish();
+							// switch to dashboard
 							Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
 							startActivity(intent);
+							
 						} else {
+							mAuthTask = false;
 							// type invalid user or password
 							showProgress(false);
 							mPasswordView.setError(getString(R.string.error_incorrect_password));
 							mPasswordView.requestFocus();
 						}
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
+					} catch (Exception e) {
+						Log.e("Log", e.getMessage());
+						showProgress(false);
 						e.printStackTrace();
 					}
 					
@@ -211,7 +236,7 @@ public class LoginActivity extends Activity {
 				}
 			    
 			});
-			
+//			mAuthTask = new UserLoginTask();
 //			mAuthTask.execute((Void) null);
 		}
 	}
@@ -295,7 +320,7 @@ public class LoginActivity extends Activity {
 	    
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			mAuthTask = null;
+			mAuthTask = false;
 			showProgress(false);
 
 			if (success) {
@@ -309,7 +334,7 @@ public class LoginActivity extends Activity {
 
 		@Override
 		protected void onCancelled() {
-			mAuthTask = null;
+			mAuthTask = false;
 			showProgress(false);
 		}
 	}

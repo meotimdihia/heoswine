@@ -2,7 +2,9 @@ package com.heocompany.hpswine;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,6 +24,11 @@ public class DetectHeoFragment extends Fragment implements OnClickListener {
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
+    	
+    	SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+    	SharedPreferences.Editor editor = sharedPref.edit();
+    	editor.putInt("highcore", 87);
+    	editor.commit();
     	
     	View v = inflater.inflate(R.layout.detect_heo, container, false);
         Button b = (Button) v.findViewById(R.id.submit_info);
