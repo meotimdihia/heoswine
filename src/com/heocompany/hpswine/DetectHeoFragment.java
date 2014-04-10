@@ -24,7 +24,7 @@ public class DetectHeoFragment extends Fragment implements OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
-
+    	
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt("highcore", 87);
@@ -69,8 +69,9 @@ public class DetectHeoFragment extends Fragment implements OnClickListener {
                     content.put("url", "http://sw.hongphucjsc.com/api/update-profile/" + idheovalue); 
                     content.put("data", "{id:" + idheovalue
                             + ", weight:" + weightvalue + "}");
-                    if (db.insert("data_queue", null, content ) != -1) {
-                        Toast.makeText(getActivity(), "Saved weight for " + idheo, 1);
+                    long result = db.insert("data_queue", null, content );
+                    if (result != -1) {
+                    	Toast.makeText(getActivity(), "Saved weight for heo ID: " + idheovalue, Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;

@@ -32,7 +32,6 @@ public class DashboardActivity extends FragmentActivity
              newFragment = new ReadUsbDevicesFragment();
         }
     
-        
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         
         transaction.replace(R.id.fragment_container, newFragment);

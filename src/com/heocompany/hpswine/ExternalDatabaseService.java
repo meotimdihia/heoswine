@@ -22,7 +22,9 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -30,6 +32,7 @@ import android.util.Log;
 public class ExternalDatabaseService extends IntentService {
 
     private static AsyncHttpClient client = new AsyncHttpClient();
+    private SharedPreferences pref;
     
     public ExternalDatabaseService() {
         super("ExternalDatabaseService");
@@ -37,7 +40,9 @@ public class ExternalDatabaseService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        
+    	pref = getSharedPreferences("com.hpswine.token", Context.MODE_PRIVATE);
+    	String token = pref.getString("token", "");
+    	Log.e("Log", "Start send request service from DB");
         while(true) {
                 try { 
                     HeoSQLite sqlite = new HeoSQLite(this);
@@ -65,7 +70,7 @@ public class ExternalDatabaseService extends IntentService {
                                 Object value = json.get(key);
                                 postdata.put(key, value);
                             }*/
-                            
+
                             HttpClient client = new DefaultHttpClient();
                             HttpPost post = new HttpPost(url);
                             
@@ -82,6 +87,7 @@ public class ExternalDatabaseService extends IntentService {
                             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams);
                             HttpPost httppost = new HttpPost(url);
                             httppost.setEntity(entity);
+                            httppost.addHeader("hpswine_token", token);
                             
                             HttpResponse response = client.execute(httppost);
                             
