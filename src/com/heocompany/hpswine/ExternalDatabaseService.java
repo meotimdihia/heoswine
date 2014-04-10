@@ -91,7 +91,7 @@ public class ExternalDatabaseService extends IntentService {
 							} else {
 								BufferedReader rd = new BufferedReader(
 								        new InputStreamReader(response.getEntity().getContent()));
-							 
+
 								StringBuffer result = new StringBuffer();
 								String line = "";
 								while ((line = rd.readLine()) != null) {

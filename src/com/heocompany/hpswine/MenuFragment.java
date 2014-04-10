@@ -64,7 +64,6 @@ public class MenuFragment extends ListFragment {
     @Override
     public void onStart() {
         super.onStart();
-
         // When in two-pane layout, set the listview to highlight the selected list item
         // (We do this during onStart because at the point the listview is available.)
     	getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);

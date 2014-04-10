@@ -317,7 +317,7 @@ public class LoginActivity extends Activity {
 	    	Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
 			startActivity(intent);
 	    }
-	    
+
 		@Override
 		protected void onPostExecute(final Boolean success) {
 			mAuthTask = false;

@@ -90,34 +90,6 @@ public class DashboardActivity extends FragmentActivity
 	
 	private static String codeid = "";
 
-//	@Override
-//    public boolean onKeyUp(int keyCode, KeyEvent event)
-//    {
-//		final EditText idHeoInput  = (EditText) this.findViewById(R.id.editText1);
-//		
-//		Log.e(TAG, "Key" + keyCode);
-//    	InputDevice input = event.getDevice();
-//    	if (input != null) {
-//	    	String descriptor = input.getDescriptor();
-//	    	
-//	    	if (descriptor.equals("0cd6a2f865b1f4e6ef3e296aeee58bc95f7574af")) {
-//	    		
-//		    	if (keyCode != 66) {
-//		    		char key = (char)event.getUnicodeChar();
-//		    		codeid += key;
-//		    	} else {
-//		    		
-//		    		idHeoInput.setText(codeid);
-//		    		Log.e(TAG, "Enter" );
-//		    		codeid = "";
-//		    	}
-//		    	
-//	    	}
-//    	}
-//    	return super.onKeyUp(keyCode, event);
-//    }
-	
-
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		final EditText idHeoInput  = (EditText) this.findViewById(R.id.heoid_text);
 		
